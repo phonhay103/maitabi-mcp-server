@@ -13,6 +13,23 @@ from maitabi_mcp_server.models import (
     ListFiltersInput,
     SearchBusToursInput,
 )
+from maitabi_mcp_server.services.http_client import get_http_client
+
+
+async def _make_api_request(url: str, params: dict = None) -> dict:
+    """Helper to make GET requests to Maitabi API with error handling."""
+    client = get_http_client()
+    try:
+        res = await client.get(url, params=params)
+        res.raise_for_status()
+        return res.json()
+    except httpx.HTTPStatusError as e:
+        return {
+            "error": f"Upstream service returned error: {e.response.status_code}",
+            "detail": str(e),
+        }
+    except httpx.RequestError as e:
+        return {"error": "Failed to connect to Maitabi server", "detail": str(e)}
 
 
 async def list_filters_service(input: ListFiltersInput) -> str:
@@ -40,11 +57,8 @@ async def list_filters_service(input: ListFiltersInput) -> str:
     if input.keyword:
         params["keyword"] = input.keyword
 
-    async with httpx.AsyncClient() as client:
-        res = await client.get(f"{API_BASE}/tour_course", params=params)
-        res.raise_for_status()
-        data = res.json()
-        return json.dumps(data, ensure_ascii=False, indent=2)
+    data = await _make_api_request(f"{API_BASE}/tour_course", params=params)
+    return json.dumps(data, ensure_ascii=False, indent=2)
 
 
 async def list_district_groups_service(input: ListDistrictGroupsInput) -> str:
@@ -72,11 +86,8 @@ async def list_district_groups_service(input: ListDistrictGroupsInput) -> str:
     if input.keyword:
         params["keyword"] = input.keyword
 
-    async with httpx.AsyncClient() as client:
-        res = await client.get(f"{API_BASE}/district_group", params=params)
-        res.raise_for_status()
-        data = res.json()
-        return json.dumps(data, ensure_ascii=False, indent=2)
+    data = await _make_api_request(f"{API_BASE}/district_group", params=params)
+    return json.dumps(data, ensure_ascii=False, indent=2)
 
 
 async def search_tours_service(input: SearchBusToursInput) -> str:
@@ -107,31 +118,27 @@ async def search_tours_service(input: SearchBusToursInput) -> str:
         params["keyword"] = input.keyword
         params["travel_type"] = "3"
 
-    async with httpx.AsyncClient() as client:
-        res = await client.get(f"{API_BASE}/tour_search", params=params)
-        res.raise_for_status()
-        data = res.json()
+    data = await _make_api_request(f"{API_BASE}/tour_search", params=params)
 
-        # Enrich result items with dynamic detail_url
-        if "tour" in data and isinstance(data["tour"], list):
-            for item in data["tour"]:
-                date_str = item.get("date", "")
-                match = re.search(r"(\d{4})年(\d{2})月", date_str)
-                if match:
-                    y, m = match.group(1), int(match.group(2))
-                else:
-                    y, m = datetime.now().year, input.month or datetime.now().month
-                item["detail_url"] = (
-                    f"{WEB_BASE}/detail.html?course_no={item.get('course_no')}&year={y}&month={m}"
-                )
+    # Enrich result items with dynamic detail_url
+    if "tour" in data and isinstance(data["tour"], list):
+        for item in data["tour"]:
+            date_str = item.get("date", "")
+            match = re.search(r"(\d{4})年(\d{2})月", date_str)
+            if match:
+                y, m = match.group(1), int(match.group(2))
+            else:
+                y, m = datetime.now().year, input.month or datetime.now().month
+            item["detail_url"] = (
+                f"{WEB_BASE}/detail.html?course_no={item.get('course_no')}&year={y}&month={m}"
+            )
 
-        return json.dumps(data, ensure_ascii=False, indent=2)
+    return json.dumps(data, ensure_ascii=False, indent=2)
 
 
 async def get_tour_detail_service(input: GetBusTourDetailInput) -> str:
     """Fetch full details for a mountain bus tour."""
-    async with httpx.AsyncClient() as client:
-        res = await client.get(f"{API_BASE}/tour_detail", params={"course_no": str(input.course_no)})
-        res.raise_for_status()
-        data = res.json()
-        return json.dumps(data, ensure_ascii=False, indent=2)
+    data = await _make_api_request(
+        f"{API_BASE}/tour_detail", params={"course_no": str(input.course_no)}
+    )
+    return json.dumps(data, ensure_ascii=False, indent=2)

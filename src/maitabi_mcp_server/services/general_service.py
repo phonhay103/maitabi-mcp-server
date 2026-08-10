@@ -11,6 +11,23 @@ from maitabi_mcp_server.models import (
     GetTourCalendarInput,
     SearchGeneralToursInput,
 )
+from maitabi_mcp_server.services.http_client import get_http_client
+
+
+async def _make_api_request(url: str, params: list | dict | None = None) -> dict:
+    """Helper to make GET requests to Maitabi API with error handling."""
+    client = get_http_client()
+    try:
+        res = await client.get(url, params=params)
+        res.raise_for_status()
+        return res.json()
+    except httpx.HTTPStatusError as e:
+        return {
+            "error": f"Upstream service returned error: {e.response.status_code}",
+            "detail": str(e),
+        }
+    except httpx.RequestError as e:
+        return {"error": "Failed to connect to Maitabi server", "detail": str(e)}
 
 
 async def search_general_tours_service(input: SearchGeneralToursInput) -> str:
@@ -45,28 +62,24 @@ async def search_general_tours_service(input: SearchGeneralToursInput) -> str:
         for val in input.category_nos5:
             params.append(("categoryNos5[]", str(val)))
 
-    async with httpx.AsyncClient(follow_redirects=True) as client:
-        res = await client.get(f"{MAIN_BASE}/api/v1/category_search", params=params)
-        res.raise_for_status()
-        data = res.json()
+    data = await _make_api_request(f"{MAIN_BASE}/api/v1/category_search", params=params)
 
-        # Enrich items with detail_url
-        if "data" in data and isinstance(data["data"], list):
-            for item in data["data"]:
-                c_no = item.get("courseNo")
-                if c_no:
-                    item["detail_url"] = f"{MAIN_BASE}/detail.php?courseNo={c_no}"
+    # Enrich items with detail_url
+    if "data" in data and isinstance(data["data"], list):
+        for item in data["data"]:
+            c_no = item.get("courseNo")
+            if c_no:
+                item["detail_url"] = f"{MAIN_BASE}/detail.php?courseNo={c_no}"
 
-        return json.dumps(data, ensure_ascii=False, indent=2)
+    return json.dumps(data, ensure_ascii=False, indent=2)
 
 
 async def get_general_tour_detail_service(input: GetGeneralTourDetailInput) -> str:
     """Fetch complete details for a general tour using API_BASE."""
-    async with httpx.AsyncClient() as client:
-        res = await client.get(f"{API_BASE}/tour_detail", params={"course_no": str(input.course_no)})
-        res.raise_for_status()
-        data = res.json()
-        return json.dumps(data, ensure_ascii=False, indent=2)
+    data = await _make_api_request(
+        f"{API_BASE}/tour_detail", params={"course_no": str(input.course_no)}
+    )
+    return json.dumps(data, ensure_ascii=False, indent=2)
 
 
 async def get_tour_calendar_service(input: GetTourCalendarInput) -> str:
@@ -76,8 +89,5 @@ async def get_tour_calendar_service(input: GetTourCalendarInput) -> str:
     if input.travel_type is not None:
         params["travelType"] = str(input.travel_type.value)
 
-    async with httpx.AsyncClient(follow_redirects=True) as client:
-        res = await client.get(url, params=params)
-        res.raise_for_status()
-        data = res.json()
-        return json.dumps(data, ensure_ascii=False, indent=2)
+    data = await _make_api_request(url, params=params)
+    return json.dumps(data, ensure_ascii=False, indent=2)

@@ -7,11 +7,16 @@ WORKDIR /app
 ENV UV_COMPILE_BYTECODE=1
 ENV UV_LINK_MODE=copy
 
-# Copy project files
-COPY pyproject.toml README.md ./
-COPY src/ src/
+# Copy project configuration and lock file
+COPY pyproject.toml uv.lock ./
 
-# Sync dependencies and project into virtual environment
+# Sync dependencies first (without installing the local project package)
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --no-dev --no-editable --no-install-project
+
+# Copy README and source files, then do the final project install
+COPY README.md ./
+COPY src/ src/
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --no-dev --no-editable
 
