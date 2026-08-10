@@ -1,4 +1,4 @@
-.PHONY: help install dev dev-http dev-sse test docker-build docker-run docker-run-http docker-push build publish clean
+.PHONY: help install dev dev-http dev-sse test docker-build docker-run docker-run-http build clean
 
 DOCKER_USER ?= phonhay103
 IMAGE_NAME ?= maitabi-mcp-server
@@ -36,17 +36,9 @@ docker-run: ## Run the MCP server inside Docker container (stdio transport)
 docker-run-http: ## Run the MCP server inside Docker container (Streamable HTTP transport)
 	docker run -i --rm -p $(PORT):$(PORT) -e MCP_TRANSPORT=streamable-http $(IMAGE_NAME):$(TAG)
 
-docker-push: docker-build ## Push Docker image to public Docker Hub (phonhay103/maitabi-mcp-server)
-	docker push $(DOCKER_USER)/$(IMAGE_NAME):$(TAG)
 
 build: ## Build Python package wheel & sdist for PyPI / uvx
 	uv build
-
-publish: ## Guide on publishing to PyPI via GitHub Actions CI
-	@echo "PyPI publishing is strictly managed via GitHub Actions CI (pypa/gh-action-pypi-publish)."
-	@echo "To release a new version to PyPI, create and push a git tag:"
-	@echo "  git tag vX.Y.Z"
-	@echo "  git push origin vX.Y.Z"
 
 clean: ## Remove build artifacts and cache
 	rm -rf .venv __pycache__ .pytest_cache *.egg-info src/*.egg-info dist

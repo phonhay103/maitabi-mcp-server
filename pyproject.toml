@@ -1,9 +1,9 @@
 [project]
 name = "maitabi-mcp-server"
-version = "0.1.1"
+version = "0.1.3"
 description = "MCP (Model Context Protocol) server for Maitabi travel & mountain bus tour extraction"
 readme = "README.md"
-license = { text = "MIT" }
+license = { text = "Apache-2.0" }
 authors = [
     { name = "phonhay103", email = "phonhay103@users.noreply.github.com" }
 ]
@@ -11,7 +11,7 @@ keywords = ["mcp", "fastmcp", "maitabi", "bus-tour", "japan-travel", "model-cont
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",

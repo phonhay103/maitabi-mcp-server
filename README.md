@@ -103,9 +103,7 @@ make dev           # Run the MCP server locally over stdio
 make dev-http      # Run the MCP server locally over Streamable HTTP (Port 8000)
 make test          # Run test suite
 make docker-build  # Build 2-stage Docker image (Python 3.14)
-make docker-push   # Build & push Docker image to Docker Hub
 make build         # Build Python package wheel & sdist
-make publish       # Show PyPI release instructions
 ```
 
 ### Local Development Client Configuration
