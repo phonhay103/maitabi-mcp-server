@@ -28,7 +28,7 @@ make test          # Run test suite
 make docker-build  # Build 2-stage Docker image (Python 3.14)
 make docker-push   # Build & push Docker image to Docker Hub (phonhay103/maitabi-mcp-server)
 make build         # Build Python package wheel & sdist
-make publish       # Publish package to PyPI for uvx execution
+make publish       # Show instructions to trigger PyPI publish via CI tag
 ```
 
 ## Running via Docker Image (Docker Hub)
