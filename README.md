@@ -17,46 +17,32 @@ Docker Hub Repository: [phonhay103/maitabi-mcp-server](https://hub.docker.com/r/
 - `get_general_tour_detail`: Fetch complete tour details, itinerary, meal condition, guide info, points of interest, and booking links for general tours by `courseNo`.
 - `get_tour_calendar`: Fetch monthly departure schedule calendar and tour matrix on `www.maitabi.jp` for a given year and month.
 
-## Development & Usage via Makefile
+---
 
+## 1. MCP Server Usage
+
+### Running the Server
+
+#### Option A: Zero-setup via `uvx`
 ```bash
-make help          # Show available Makefile targets
-make install       # Install dependencies using uv
-make dev           # Run the MCP server locally over stdio
-make dev-http      # Run the MCP server locally over Streamable HTTP (Port 8000)
-make test          # Run test suite
-make docker-build  # Build 2-stage Docker image (Python 3.14)
-make docker-push   # Build & push Docker image to Docker Hub (phonhay103/maitabi-mcp-server)
-make build         # Build Python package wheel & sdist
-make publish       # Show instructions to trigger PyPI publish via CI tag
+# From PyPI (once published)
+uvx maitabi-mcp-server
+
+# Directly from Git repository
+uvx --from git+https://github.com/phonhay103/maitabi-mcp-server.git maitabi-mcp-server
 ```
 
-## Running via Docker Image (Docker Hub)
-
+#### Option B: Via Docker Image
 ```bash
 docker pull phonhay103/maitabi-mcp-server:latest
 docker run -i --rm phonhay103/maitabi-mcp-server:latest
 ```
 
-## Running via `uvx` (Zero-setup)
+### Configuration for MCP Clients
 
-### From PyPI (once published):
-```bash
-uvx maitabi-mcp-server
-```
+Add the following to your MCP client settings (e.g. `claude_desktop_config.json`, Cursor, Pi):
 
-### From Git repository directly:
-```bash
-uvx --from git+https://github.com/phonhay103/maitabi-mcp-server.git maitabi-mcp-server
-```
-
-## Configuration for MCP Clients
-
-### Claude Desktop / Pi / Cursor Configuration
-
-Add the following to your MCP client settings (e.g. `claude_desktop_config.json`):
-
-#### Using `uvx` (PyPI / Zero Setup):
+#### Via `uvx` (Recommended):
 ```json
 {
   "mcpServers": {
@@ -68,7 +54,7 @@ Add the following to your MCP client settings (e.g. `claude_desktop_config.json`
 }
 ```
 
-#### Using Docker (Public Image):
+#### Via Docker:
 ```json
 {
   "mcpServers": {
@@ -85,7 +71,47 @@ Add the following to your MCP client settings (e.g. `claude_desktop_config.json`
 }
 ```
 
-#### Using `uv` locally:
+### Agent Skills ([vercel-labs/skills](https://github.com/vercel-labs/skills))
+
+Install and use Agent Skills from this repository via `npx skills`:
+
+```bash
+# Install to current project
+npx skills add phonhay103/maitabi-mcp-server
+
+# Install globally
+npx skills add phonhay103/maitabi-mcp-server -g
+
+# List skills / Use without installing
+npx skills add phonhay103/maitabi-mcp-server --list
+npx skills use phonhay103/maitabi-mcp-server
+```
+
+**Available Skills:**
+- **`maitabi-bus-extractor`** (`skills/maitabi-bus-extractor/SKILL.md`): Search and extract Maitabi mountain bus (`bus.maitabi.jp`) and general trekking tours (`www.maitabi.jp`).
+
+---
+
+## 2. Development
+
+### Makefile Commands
+
+```bash
+make help          # Show available Makefile targets
+make install       # Install dependencies using uv
+make dev           # Run the MCP server locally over stdio
+make dev-http      # Run the MCP server locally over Streamable HTTP (Port 8000)
+make test          # Run test suite
+make docker-build  # Build 2-stage Docker image (Python 3.14)
+make docker-push   # Build & push Docker image to Docker Hub
+make build         # Build Python package wheel & sdist
+make publish       # Show PyPI release instructions
+```
+
+### Local Development Client Configuration
+
+To test a local checkout with an MCP client:
+
 ```json
 {
   "mcpServers": {
