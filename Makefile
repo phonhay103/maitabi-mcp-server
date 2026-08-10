@@ -34,7 +34,7 @@ docker-run: ## Run the MCP server inside Docker container (stdio transport)
 	docker run -i --rm $(IMAGE_NAME):$(TAG)
 
 docker-run-http: ## Run the MCP server inside Docker container (Streamable HTTP transport)
-	docker run -i --rm -p $(PORT):$(PORT) -e MCP_TRANSPORT=streamable-http $(IMAGE_NAME):$(TAG)
+	docker run -i --rm -p $(PORT):$(PORT) $(IMAGE_NAME):$(TAG) --transport streamable-http --port $(PORT)
 
 
 build: ## Build Python package wheel & sdist for PyPI / uvx
