@@ -40,9 +40,12 @@ docker run -i --rm phonhay103/maitabi-mcp-server:latest
 
 ### Configuration for MCP Clients
 
-Add the following to your MCP client settings (e.g. `claude_desktop_config.json`, Cursor, Pi):
+Add the following to your MCP client settings depending on your client platform:
 
-#### Via `uvx` (Recommended):
+#### 1. For Claude Desktop / Cursor / Pi (`claude_desktop_config.json`)
+Uses the `"mcpServers"` top-level key format:
+
+##### Via `uvx` (Recommended):
 ```json
 {
   "mcpServers": {
@@ -54,7 +57,7 @@ Add the following to your MCP client settings (e.g. `claude_desktop_config.json`
 }
 ```
 
-#### Via Docker:
+##### Via Docker:
 ```json
 {
   "mcpServers": {
@@ -68,6 +71,62 @@ Add the following to your MCP client settings (e.g. `claude_desktop_config.json`
       ]
     }
   }
+}
+```
+
+#### 2. For VSCode / Cursor Extensions (e.g. Cline, Roo Code, etc.)
+Uses the `"servers"` top-level key and requires the `"type": "stdio"` field (typically in `clines_mcp_settings.json` or `mcp_settings.json`):
+
+##### Via `uvx` (Recommended):
+```json
+{
+  "servers": {
+    "maitabi-pypi": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["maitabi-mcp-server"]
+    }
+  },
+  "inputs": []
+}
+```
+
+##### Via WSL (For Windows host VSCode accessing Linux/WSL):
+```json
+{
+  "servers": {
+    "maitabi-wsl": {
+      "type": "stdio",
+      "command": "wsl",
+      "args": [
+        "~/.local/bin/uv",
+        "run",
+        "--directory",
+        "~/maitabi-mcp-server",
+        "maitabi-mcp-server"
+      ]
+    }
+  },
+  "inputs": []
+}
+```
+
+##### Via Docker:
+```json
+{
+  "servers": {
+    "maitabi-docker": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "phonhay103/maitabi-mcp-server:latest"
+      ]
+    }
+  },
+  "inputs": []
 }
 ```
 
