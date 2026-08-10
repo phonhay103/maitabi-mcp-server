@@ -16,6 +16,25 @@
 			"args": [
 				"maitabi-mcp-server"
 			]
+		},
+		"maitabi-uvx-local": {
+			"type": "stdio",
+			"command": "uvx",
+			"args": [
+				"--from",
+				".",
+				"maitabi-mcp-server"
+			]
+		},
+		"maitabi-docker-local": {
+			"type": "stdio",
+			"command": "docker",
+			"args": [
+				"run",
+				"-i",
+				"--rm",
+				"maitabi-mcp-server:latest"
+			]
 		}
 	},
 	"inputs": []
