@@ -18,7 +18,7 @@ from maitabi_mcp_server.models import (
 async def list_filters_service(input: ListFiltersInput) -> str:
     """Fetch available filter options for mountain bus tours."""
     target_month = input.month if input.month is not None else datetime.now().month
-    url = f"{API_BASE}/tour_course?departure={input.departure}&month={target_month}"
+    url = f"{API_BASE}/tour_course?departure={input.departure.value}&month={target_month}"
 
     async with httpx.AsyncClient() as client:
         res = await client.get(url)
@@ -30,7 +30,7 @@ async def list_filters_service(input: ListFiltersInput) -> str:
 async def list_district_groups_service(input: ListDistrictGroupsInput) -> str:
     """Fetch district groups and tour counts for mountain bus tours."""
     target_month = input.month if input.month is not None else datetime.now().month
-    url = f"{API_BASE}/district_group?departure={input.departure}&month={target_month}"
+    url = f"{API_BASE}/district_group?departure={input.departure.value}&month={target_month}"
 
     async with httpx.AsyncClient() as client:
         res = await client.get(url)

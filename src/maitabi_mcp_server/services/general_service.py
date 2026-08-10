@@ -15,7 +15,7 @@ from maitabi_mcp_server.models import (
 
 async def search_general_tours_service(input: SearchGeneralToursInput) -> str:
     """Search Mainichi Travel general tours."""
-    params = {"travelType": str(input.travel_type), "page": str(input.page)}
+    params = {"travelType": str(input.travel_type.value), "page": str(input.page)}
     if input.keyword:
         params["keyword"] = input.keyword
     if input.year_month:
@@ -59,7 +59,7 @@ async def get_tour_calendar_service(input: GetTourCalendarInput) -> str:
     url = f"{MAIN_BASE}/api/v1/calendar/{input.year}/{input.month}"
     params = {}
     if input.travel_type is not None:
-        params["travelType"] = str(input.travel_type)
+        params["travelType"] = str(input.travel_type.value)
 
     async with httpx.AsyncClient(follow_redirects=True) as client:
         res = await client.get(url, params=params)

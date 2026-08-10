@@ -4,10 +4,14 @@ from typing import Annotated, Optional
 from pydantic import Field
 
 from maitabi_mcp_server.models import (
+    BusSeatType,
+    DeparturePoint,
     GetBusTourDetailInput,
     ListDistrictGroupsInput,
     ListFiltersInput,
+    ReturnDayOption,
     SearchBusToursInput,
+    TourStyle,
 )
 from maitabi_mcp_server.services.bus_service import (
     get_tour_detail_service,
@@ -22,37 +26,134 @@ def register_bus_tools(mcp) -> None:
 
     @mcp.tool()
     async def list_filters(
-        departure: Annotated[int, Field(description="Point of departure: 1=Tokyo, 2=Osaka/Kyoto, 3=Nagoya")] = 1,
-        month: Annotated[Optional[int], Field(description="Departure month (1-12). Defaults to current month if omitted.")] = None,
+        departure: Annotated[
+            DeparturePoint,
+            Field(
+                description="Departure point: 1=Tokyo (Takebashi/Shinjuku), 2=Osaka/Kyoto, 3=Nagoya"
+            ),
+        ] = DeparturePoint.TOKYO,
+        month: Annotated[
+            Optional[int],
+            Field(
+                ge=1,
+                le=12,
+                description="Departure month (1-12). Defaults to current month if omitted.",
+            ),
+        ] = None,
     ) -> str:
-        """Fetch available filter dropdown options, departure areas, tour styles, mountain lodges, and tour counts for Maitabi bus tours."""
-        return await list_filters_service(ListFiltersInput(departure=departure, month=month))
+        """Fetch available filter dropdown options, departure areas, tour styles, mountain lodges, and tour counts for Maitabi bus tours.
+
+        Returns a JSON string containing filter options, areas, tour styles, mountain lodge lists, and current tour counts.
+        """
+        return await list_filters_service(
+            ListFiltersInput(departure=departure, month=month)
+        )
 
     @mcp.tool()
     async def list_district_groups(
-        departure: Annotated[int, Field(description="Point of departure: 1=Tokyo, 2=Osaka/Kyoto, 3=Nagoya")] = 1,
-        month: Annotated[Optional[int], Field(description="Departure month (1-12). Defaults to current month if omitted.")] = None,
+        departure: Annotated[
+            DeparturePoint,
+            Field(
+                description="Departure point: 1=Tokyo (Takebashi/Shinjuku), 2=Osaka/Kyoto, 3=Nagoya"
+            ),
+        ] = DeparturePoint.TOKYO,
+        month: Annotated[
+            Optional[int],
+            Field(
+                ge=1,
+                le=12,
+                description="Departure month (1-12). Defaults to current month if omitted.",
+            ),
+        ] = None,
     ) -> str:
-        """Fetch area/district groups and tour counts for mountain bus tours on Maitabi."""
-        return await list_district_groups_service(ListDistrictGroupsInput(departure=departure, month=month))
+        """Fetch mountain area/district groups and tour counts for Maitabi mountain bus tours.
+
+        Returns a JSON string containing district groups, mountain area IDs, and tour counts per district.
+        """
+        return await list_district_groups_service(
+            ListDistrictGroupsInput(departure=departure, month=month)
+        )
 
     @mcp.tool()
     async def search_tours(
-        departure: Annotated[int, Field(description="Point of departure: 1=Tokyo, 2=Osaka/Kyoto, 3=Nagoya")] = 1,
-        month: Annotated[Optional[int], Field(description="Departure month (1-12)")] = None,
-        day: Annotated[Optional[int], Field(description="Departure day (1-31)")] = None,
-        area: Annotated[Optional[int], Field(description="Area/direction ID (e.g. 18=Tateyama Murodo, 10=Kamikochi)")] = None,
-        style: Annotated[Optional[int], Field(description="Tour style ID (e.g. 6=Night trip/round-trip)")] = None,
-        return_day: Annotated[Optional[int], Field(description="Return date option ID (1=1 day after, 2=2 days after)")] = None,
-        bus_sheet: Annotated[Optional[int], Field(description="Bus seat type ID (1=Standard, 2=Premium)")] = None,
-        stay1: Annotated[Optional[int], Field(description="Mountain lodge ID for night 1")] = None,
-        stay2: Annotated[Optional[int], Field(description="Mountain lodge ID for night 2")] = None,
-        stay3: Annotated[Optional[int], Field(description="Mountain lodge ID for night 3")] = None,
-        course_cd: Annotated[Optional[str], Field(description="Course code (e.g. 'S104C21')")] = None,
-        keyword: Annotated[Optional[str], Field(description="Search keyword in Japanese (e.g. '立山')")] = None,
-        page: Annotated[int, Field(description="Page number")] = 1,
+        departure: Annotated[
+            DeparturePoint,
+            Field(
+                description="Departure point: 1=Tokyo (Takebashi/Shinjuku), 2=Osaka/Kyoto, 3=Nagoya"
+            ),
+        ] = DeparturePoint.TOKYO,
+        month: Annotated[
+            Optional[int],
+            Field(ge=1, le=12, description="Departure month (1-12)"),
+        ] = None,
+        day: Annotated[
+            Optional[int],
+            Field(ge=1, le=31, description="Departure day (1-31)"),
+        ] = None,
+        area: Annotated[
+            Optional[int],
+            Field(
+                ge=0,
+                description="Area/direction ID (e.g., 18=Tateyama Murodo, 10=Kamikochi, 0=All)",
+            ),
+        ] = None,
+        style: Annotated[
+            Optional[TourStyle],
+            Field(
+                description="Tour style: 1=Round-trip bus, 2=Outbound bus, 3=Inbound bus, 4=Round-trip lodge, 5=Outbound lodge, 6=Overnight day-trip, 7=Taxi plan"
+            ),
+        ] = None,
+        return_day: Annotated[
+            Optional[ReturnDayOption],
+            Field(
+                description="Return date option: 1=1 day after departure, 2=2 days after, 3=3 days after, 4=4 days after, 5=5 days after"
+            ),
+        ] = None,
+        bus_sheet: Annotated[
+            Optional[BusSeatType],
+            Field(
+                description="Bus seat type: 1=Standard, 2=Premium, 3=Outbound Premium / Inbound Standard, 4=Outbound Standard / Inbound Premium, 5=Double seat, 6=Taxi"
+            ),
+        ] = None,
+        stay1: Annotated[
+            Optional[int],
+            Field(
+                ge=1,
+                description="Mountain lodge ID for night 1 (e.g., 5=Enzanso, 2=Nishiho Sanso)",
+            ),
+        ] = None,
+        stay2: Annotated[
+            Optional[int],
+            Field(ge=1, description="Mountain lodge ID for night 2"),
+        ] = None,
+        stay3: Annotated[
+            Optional[int],
+            Field(ge=1, description="Mountain lodge ID for night 3"),
+        ] = None,
+        course_cd: Annotated[
+            Optional[str],
+            Field(
+                min_length=1,
+                max_length=50,
+                description="Maitabi course code (e.g., 'S104C21')",
+            ),
+        ] = None,
+        keyword: Annotated[
+            Optional[str],
+            Field(
+                min_length=1,
+                max_length=100,
+                description="Search keyword in Japanese (e.g., '立山', '上高地')",
+            ),
+        ] = None,
+        page: Annotated[
+            int, Field(ge=1, description="Page number (1-based)")
+        ] = 1,
     ) -> str:
-        """Search mountain bus tours on Maitabi (bus.maitabi.jp) with filters."""
+        """Search mountain bus tours and lodge packages on Maitabi (bus.maitabi.jp) with detailed filter criteria.
+
+        Returns a JSON string containing matching bus tours, seat options, pricing, departure dates, and course numbers.
+        """
         input_data = SearchBusToursInput(
             departure=departure,
             month=month,
@@ -72,7 +173,18 @@ def register_bus_tools(mcp) -> None:
 
     @mcp.tool()
     async def get_tour_detail(
-        course_no: Annotated[int, Field(description="Internal course number (e.g. 14241 or 8518)")],
+        course_no: Annotated[
+            int,
+            Field(
+                gt=0,
+                description="Internal course number on bus.maitabi.jp (e.g., 14241, 8518)",
+            ),
+        ],
     ) -> str:
-        """Fetch full details for a specific Maitabi mountain bus tour by course_no."""
-        return await get_tour_detail_service(GetBusTourDetailInput(course_no=course_no))
+        """Fetch detailed information, schedule, pricing, and bus stops for a specific Maitabi mountain bus tour by course_no.
+
+        Returns a JSON string containing complete tour itinerary, bus departure points, seat options, pricing, and lodging info.
+        """
+        return await get_tour_detail_service(
+            GetBusTourDetailInput(course_no=course_no)
+        )
