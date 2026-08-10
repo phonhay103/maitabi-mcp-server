@@ -1,0 +1,22 @@
+{
+	"servers": {
+		"maitabi": {
+			"command": "docker",
+			"args": [
+				"run",
+				"-i",
+				"--rm",
+				"phonhay103/maitabi-mcp-server:latest"
+			],
+			"type": "stdio"
+		},
+		"maitabi-pypi": {
+			"type": "stdio",
+			"command": "uvx",
+			"args": [
+				"maitabi-mcp-server"
+			]
+		}
+	},
+	"inputs": []
+}
