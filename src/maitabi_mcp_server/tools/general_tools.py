@@ -47,10 +47,46 @@ def register_general_tools(mcp) -> None:
             Field(ge=1, le=31, description="Departure day of month (1-31)"),
         ] = None,
         page: Annotated[int, Field(ge=1, description="Page number (1-based)")] = 1,
+        list_order: Annotated[
+            Optional[str],
+            Field(
+                description="Sort order: 'startDateAsc' (departure earliest), 'saikouStatus' (departure status), 'yoyakuStatus' (availability), 'priceAsc' (price low to high), 'priceDesc' (price high to low)"
+            ),
+        ] = None,
+        category_nos1: Annotated[
+            Optional[list[int]],
+            Field(
+                description="Subcategory Nos for Style/Duration (e.g. [36] for Day trip, [259] for Overnight)"
+            ),
+        ] = None,
+        category_nos2: Annotated[
+            Optional[list[int]],
+            Field(
+                description="Subcategory Nos for Difficulty/Shoes (e.g. [363] for Grade 1 / Introduction)"
+            ),
+        ] = None,
+        category_nos3: Annotated[
+            Optional[list[int]],
+            Field(
+                description="Subcategory Nos for Departure Region (e.g. [13] for Kanto, [15] for Tokai)"
+            ),
+        ] = None,
+        category_nos4: Annotated[
+            Optional[list[int]],
+            Field(
+                description="Subcategory Nos for Themes/Tours"
+            ),
+        ] = None,
+        category_nos5: Annotated[
+            Optional[list[int]],
+            Field(
+                description="Subcategory Nos for Guides"
+            ),
+        ] = None,
     ) -> str:
         """Search general travel tours and mountain climbing packages on www.maitabi.jp.
 
-        Returns a JSON string containing matching tours, total count, pagination, and course numbers.
+        Returns a JSON string containing matching tours, total count, pagination, sorting, and categories.
         """
         input_data = SearchGeneralToursInput(
             travel_type=travel_type,
@@ -58,9 +94,14 @@ def register_general_tools(mcp) -> None:
             year_month=year_month,
             day=day,
             page=page,
+            list_order=list_order,
+            category_nos1=category_nos1,
+            category_nos2=category_nos2,
+            category_nos3=category_nos3,
+            category_nos4=category_nos4,
+            category_nos5=category_nos5,
         )
         return await search_general_tours_service(input_data)
-
     @mcp.tool()
     async def get_general_tour_detail(
         course_no: Annotated[

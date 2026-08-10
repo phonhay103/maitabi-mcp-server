@@ -111,8 +111,7 @@ Search general Mainichi Travel tours on `www.maitabi.jp`.
 Extract complete details, points, meal conditions, guide info, and booking links for general tours.
 - **cURL Example**:
   ```bash
-  curl -L -s 'https://www.maitabi.jp/detail.php?courseNo=1723'
-  ```
+  curl -L -s 'https://api.bus.maitabi.jp/tour_detail?course_no=1723'
 
 ### Action 6: `get_tour_calendar(year, month, travel_type)`
 Retrieve monthly departure calendar matrix showing active tours per day.

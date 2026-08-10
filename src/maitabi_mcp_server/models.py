@@ -75,6 +75,73 @@ class ListFiltersInput(BaseModel):
             description="Departure month (1-12). Defaults to current month if omitted.",
         ),
     ]
+    day: Annotated[
+        Optional[int],
+        Field(default=None, ge=1, le=31, description="Departure day (1-31)"),
+    ] = None
+    area: Annotated[
+        Optional[int],
+        Field(
+            default=None,
+            ge=0,
+            description="Area/direction ID (e.g., 18=Tateyama Murodo, 10=Kamikochi, 0=All)",
+        ),
+    ] = None
+    style: Annotated[
+        Optional[TourStyle],
+        Field(
+            default=None,
+            description="Tour style: 1=Round-trip bus, 2=Outbound bus, 3=Inbound bus, 4=Round-trip lodge, 5=Outbound lodge, 6=Overnight day-trip, 7=Taxi plan",
+        ),
+    ] = None
+    return_day: Annotated[
+        Optional[ReturnDayOption],
+        Field(
+            default=None,
+            description="Return date option: 1=1 day after departure, 2=2 days after, 3=3 days after, 4=4 days after, 5=5 days after",
+        ),
+    ] = None
+    bus_sheet: Annotated[
+        Optional[BusSeatType],
+        Field(
+            default=None,
+            description="Bus seat type: 1=Standard, 2=Premium, 3=Outbound Premium / Inbound Standard, 4=Outbound Standard / Inbound Premium, 5=Double seat, 6=Taxi",
+        ),
+    ] = None
+    stay1: Annotated[
+        Optional[int],
+        Field(
+            default=None,
+            ge=1,
+            description="Mountain lodge ID for night 1 (e.g., 5=Enzanso, 2=Nishiho Sanso)",
+        ),
+    ] = None
+    stay2: Annotated[
+        Optional[int],
+        Field(default=None, ge=1, description="Mountain lodge ID for night 2"),
+    ] = None
+    stay3: Annotated[
+        Optional[int],
+        Field(default=None, ge=1, description="Mountain lodge ID for night 3"),
+    ] = None
+    course_cd: Annotated[
+        Optional[str],
+        Field(
+            default=None,
+            min_length=1,
+            max_length=50,
+            description="Maitabi course code (e.g., 'S104C21')",
+        ),
+    ] = None
+    keyword: Annotated[
+        Optional[str],
+        Field(
+            default=None,
+            min_length=1,
+            max_length=100,
+            description="Search keyword in Japanese (e.g., '立山', '上高地')",
+        ),
+    ] = None
 
 
 class ListDistrictGroupsInput(BaseModel):
@@ -96,6 +163,73 @@ class ListDistrictGroupsInput(BaseModel):
             description="Departure month (1-12). Defaults to current month if omitted.",
         ),
     ]
+    day: Annotated[
+        Optional[int],
+        Field(default=None, ge=1, le=31, description="Departure day (1-31)"),
+    ] = None
+    area: Annotated[
+        Optional[int],
+        Field(
+            default=None,
+            ge=0,
+            description="Area/direction ID (e.g., 18=Tateyama Murodo, 10=Kamikochi, 0=All)",
+        ),
+    ] = None
+    style: Annotated[
+        Optional[TourStyle],
+        Field(
+            default=None,
+            description="Tour style: 1=Round-trip bus, 2=Outbound bus, 3=Inbound bus, 4=Round-trip lodge, 5=Outbound lodge, 6=Overnight day-trip, 7=Taxi plan",
+        ),
+    ] = None
+    return_day: Annotated[
+        Optional[ReturnDayOption],
+        Field(
+            default=None,
+            description="Return date option: 1=1 day after departure, 2=2 days after, 3=3 days after, 4=4 days after, 5=5 days after",
+        ),
+    ] = None
+    bus_sheet: Annotated[
+        Optional[BusSeatType],
+        Field(
+            default=None,
+            description="Bus seat type: 1=Standard, 2=Premium, 3=Outbound Premium / Inbound Standard, 4=Outbound Standard / Inbound Premium, 5=Double seat, 6=Taxi",
+        ),
+    ] = None
+    stay1: Annotated[
+        Optional[int],
+        Field(
+            default=None,
+            ge=1,
+            description="Mountain lodge ID for night 1 (e.g., 5=Enzanso, 2=Nishiho Sanso)",
+        ),
+    ] = None
+    stay2: Annotated[
+        Optional[int],
+        Field(default=None, ge=1, description="Mountain lodge ID for night 2"),
+    ] = None
+    stay3: Annotated[
+        Optional[int],
+        Field(default=None, ge=1, description="Mountain lodge ID for night 3"),
+    ] = None
+    course_cd: Annotated[
+        Optional[str],
+        Field(
+            default=None,
+            min_length=1,
+            max_length=50,
+            description="Maitabi course code (e.g., 'S104C21')",
+        ),
+    ] = None
+    keyword: Annotated[
+        Optional[str],
+        Field(
+            default=None,
+            min_length=1,
+            max_length=100,
+            description="Search keyword in Japanese (e.g., '立山', '上高地')",
+        ),
+    ] = None
 
 
 class SearchBusToursInput(BaseModel):
@@ -226,6 +360,48 @@ class SearchGeneralToursInput(BaseModel):
         Field(default=None, ge=1, le=31, description="Departure day of month (1-31)"),
     ]
     page: Annotated[int, Field(default=1, ge=1, description="Page number (1-based)")]
+    list_order: Annotated[
+        Optional[str],
+        Field(
+            default=None,
+            description="Sort order: 'startDateAsc' (departure earliest), 'saikouStatus' (departure status), 'yoyakuStatus' (availability), 'priceAsc' (price low to high), 'priceDesc' (price high to low)",
+        ),
+    ] = None
+    category_nos1: Annotated[
+        Optional[list[int]],
+        Field(
+            default=None,
+            description="Subcategory Nos for Style/Duration (e.g. [36] for Day trip, [259] for Overnight)",
+        ),
+    ] = None
+    category_nos2: Annotated[
+        Optional[list[int]],
+        Field(
+            default=None,
+            description="Subcategory Nos for Difficulty/Shoes (e.g. [363] for Grade 1 / Introduction)",
+        ),
+    ] = None
+    category_nos3: Annotated[
+        Optional[list[int]],
+        Field(
+            default=None,
+            description="Subcategory Nos for Departure Region (e.g. [13] for Kanto, [15] for Tokai)",
+        ),
+    ] = None
+    category_nos4: Annotated[
+        Optional[list[int]],
+        Field(
+            default=None,
+            description="Subcategory Nos for Themes/Tours",
+        ),
+    ] = None
+    category_nos5: Annotated[
+        Optional[list[int]],
+        Field(
+            default=None,
+            description="Subcategory Nos for Guides",
+        ),
+    ] = None
 
 
 class GetGeneralTourDetailInput(BaseModel):
