@@ -48,3 +48,13 @@ jobs:
           annotations: ${{ steps.meta.outputs.annotations }}
           provenance: true
           sbom: true
+
+
+      - name: Update Docker Hub Description
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ secrets.DOCKERHUB_USERNAME }}/maitabi-mcp-server
+          short-description: "An MCP server in Python for searching and extracting Maitabi (まいたび) mountain bus and tour information."
+          readme-filepath: ./README.md
