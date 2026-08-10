@@ -1,5 +1,5 @@
-# Stage 1: Build virtual environment with uv and Python 3.12
-FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS builder
+# Stage 1: Build virtual environment with uv and Python 3.14
+FROM ghcr.io/astral-sh/uv:python3.14-bookworm-slim AS builder
 
 WORKDIR /app
 
@@ -20,8 +20,8 @@ COPY src/ src/
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --no-dev --no-editable
 
-# Stage 2: Minimal runtime image with Python 3.12
-FROM python:3.12-slim AS runner
+# Stage 2: Minimal runtime image with Python 3.14
+FROM python:3.14-slim-bookworm AS runner
 
 WORKDIR /app
 
