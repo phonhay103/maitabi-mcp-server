@@ -56,5 +56,5 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: ${{ secrets.DOCKERHUB_USERNAME }}/maitabi-mcp-server
-          short-description: "An MCP server in Python for searching and extracting Maitabi (まいたび) mountain bus and tour information."
+          short-description: "Maitabi MCP server in Python for mountain bus and tour info."
           readme-filepath: ./README.md
