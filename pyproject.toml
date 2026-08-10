@@ -1,0 +1,41 @@
+[project]
+name = "maitabi-mcp-server"
+version = "0.1.0"
+description = "MCP (Model Context Protocol) server for Maitabi travel & mountain bus tour extraction"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+    { name = "phonhay103", email = "phonhay103@users.noreply.github.com" }
+]
+keywords = ["mcp", "fastmcp", "maitabi", "bus-tour", "japan-travel", "model-context-protocol"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "mcp>=1.29.0",
+    "httpx>=0.27.0",
+    "fastmcp>=3.4.5",
+    "pydantic>=2.13.4",
+]
+
+[project.urls]
+Homepage = "https://github.com/phonhay103/maitabi-mcp-server"
+Repository = "https://github.com/phonhay103/maitabi-mcp-server"
+"Docker Hub" = "https://hub.docker.com/r/phonhay103/maitabi-mcp-server"
+
+[project.scripts]
+maitabi-mcp-server = "maitabi_mcp_server.server:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

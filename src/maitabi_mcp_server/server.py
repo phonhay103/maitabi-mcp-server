@@ -1,0 +1,54 @@
+"""Main server entrypoint for Maitabi MCP Server."""
+
+import argparse
+import os
+
+from fastmcp import FastMCP
+
+from maitabi_mcp_server.tools.bus_tools import register_bus_tools
+from maitabi_mcp_server.tools.general_tools import register_general_tools
+
+mcp = FastMCP("maitabi-mcp-server")
+
+# Register all tools
+register_bus_tools(mcp)
+register_general_tools(mcp)
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Maitabi MCP Server")
+    parser.add_argument(
+        "--transport",
+        choices=["stdio", "sse", "streamable-http"],
+        default=os.getenv("MCP_TRANSPORT", "stdio"),
+        help="Transport protocol: 'stdio', 'sse', or 'streamable-http'. Default: stdio",
+    )
+    parser.add_argument(
+        "--host",
+        default=os.getenv("HOST", "0.0.0.0"),
+        help="Host address for HTTP/SSE transport. Default: 0.0.0.0",
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=int(os.getenv("PORT", "8000")),
+        help="Port number for HTTP/SSE transport. Default: 8000",
+    )
+    parser.add_argument(
+        "--path",
+        default=os.getenv("MCP_PATH", "/mcp"),
+        help="Path for Streamable HTTP transport. Default: /mcp",
+    )
+
+    args = parser.parse_args()
+
+    if args.transport == "stdio":
+        mcp.run(transport="stdio")
+    elif args.transport == "streamable-http":
+        mcp.run(transport="streamable-http", host=args.host, port=args.port, path=args.path)
+    elif args.transport == "sse":
+        mcp.run(transport="sse", host=args.host, port=args.port)
+
+
+if __name__ == "__main__":
+    main()

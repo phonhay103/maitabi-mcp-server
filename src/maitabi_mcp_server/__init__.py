@@ -1,0 +1,1 @@
+"""Maitabi MCP Server package."""
