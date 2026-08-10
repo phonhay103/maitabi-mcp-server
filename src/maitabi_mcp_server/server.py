@@ -43,7 +43,12 @@ def main():
     args = parser.parse_args()
 
     if args.transport == "stdio":
-        mcp.run(transport="stdio")
+        import logging
+        # Silence all standard logs to prevent noise on stderr that confuses client IDEs
+        logging.basicConfig(level=logging.WARNING)
+        for logger_name in ["mcp", "fastmcp", "uvicorn", "anyio"]:
+            logging.getLogger(logger_name).setLevel(logging.WARNING)
+        mcp.run(transport="stdio", show_banner=False)
     elif args.transport == "streamable-http":
         mcp.run(transport="streamable-http", host=args.host, port=args.port, path=args.path)
     elif args.transport == "sse":
