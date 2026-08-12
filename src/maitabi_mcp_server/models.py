@@ -247,8 +247,8 @@ class SearchBusToursInput(BaseModel):
         Field(default=None, ge=1, le=12, description="Departure month (1-12)"),
     ]
     day: Annotated[
-        Optional[int],
-        Field(default=None, ge=1, le=31, description="Departure day (1-31)"),
+        Optional[int | list[int] | str],
+        Field(default=None, description="Departure day (1-31). Can be a single int, a list of ints, or a string range (e.g., '14-16, 20')."),
     ]
     area: Annotated[
         Optional[int],
@@ -314,16 +314,27 @@ class SearchBusToursInput(BaseModel):
         ),
     ]
     page: Annotated[int, Field(default=1, ge=1, description="Page number (1-based)")]
+    max_price: Annotated[
+        Optional[int],
+        Field(default=None, description="Maximum price in JPY (e.g., 20000). Filters the results before returning."),
+    ] = None
+    min_price: Annotated[
+        Optional[int],
+        Field(default=None, description="Minimum price in JPY (e.g., 10000). Filters the results before returning."),
+    ] = None
+    require_available_seats: Annotated[
+        bool,
+        Field(default=False, description="If True, filters out full/closed tours (満席, 受付終了)."),
+    ] = False
 
 
 class GetBusTourDetailInput(BaseModel):
     """Input schema for fetching bus tour detail by course number."""
 
     course_no: Annotated[
-        int,
+        int | list[int],
         Field(
-            gt=0,
-            description="Internal course number on bus.maitabi.jp (e.g., 14241, 8518)",
+            description="Internal course number(s) on bus.maitabi.jp (e.g., 14241). Can be a single int or list of ints for batch fetching.",
         ),
     ]
 
@@ -356,9 +367,21 @@ class SearchGeneralToursInput(BaseModel):
         ),
     ]
     day: Annotated[
-        Optional[int],
-        Field(default=None, ge=1, le=31, description="Departure day of month (1-31)"),
+        Optional[int | list[int] | str],
+        Field(default=None, description="Departure day of month (1-31). Can be a single int, a list of ints, or a string range (e.g., '14-16, 20')."),
     ]
+    min_price: Annotated[
+        Optional[int],
+        Field(default=None, description="Minimum price in JPY (e.g., 10000). Filters the results before returning."),
+    ] = None
+    max_price: Annotated[
+        Optional[int],
+        Field(default=None, description="Maximum price in JPY (e.g., 50000). Filters the results before returning."),
+    ] = None
+    require_available_seats: Annotated[
+        bool,
+        Field(default=False, description="If True, filters out full/closed tours (満席, 受付終了)."),
+    ] = False
     page: Annotated[int, Field(default=1, ge=1, description="Page number (1-based)")]
     list_order: Annotated[
         Optional[str],
@@ -408,10 +431,9 @@ class GetGeneralTourDetailInput(BaseModel):
     """Input schema for fetching general tour detail by course number."""
 
     course_no: Annotated[
-        int,
+        int | list[int],
         Field(
-            gt=0,
-            description="Tour course number on www.maitabi.jp (e.g., 1723, 24865)",
+            description="Tour course number(s) on www.maitabi.jp (e.g., 1723, 24865). Can be a single int or list of ints for batch fetching.",
         ),
     ]
 

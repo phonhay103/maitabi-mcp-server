@@ -1,7 +1,6 @@
 [project]
 name = "maitabi-mcp-server"
-version = "0.1.8"
-description = "MCP (Model Context Protocol) server for Maitabi travel & mountain bus tour extraction"
+version = "0.1.9"
 readme = "README.md"
 license = { text = "Apache-2.0" }
 authors = [

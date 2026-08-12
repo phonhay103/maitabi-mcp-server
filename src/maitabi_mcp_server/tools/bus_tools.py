@@ -233,8 +233,8 @@ def register_bus_tools(mcp) -> None:
             Field(ge=1, le=12, description="Departure month (1-12)"),
         ] = None,
         day: Annotated[
-            Optional[int],
-            Field(ge=1, le=31, description="Departure day (1-31)"),
+            Optional[int | list[int] | str],
+            Field(description="Departure day (1-31). Can be a single int, a list of ints, or a string range (e.g., '14-16, 20')."),
         ] = None,
         area: Annotated[
             Optional[int],
@@ -292,6 +292,18 @@ def register_bus_tools(mcp) -> None:
                 description="Search keyword in Japanese (e.g., '立山', '上高地')",
             ),
         ] = None,
+        min_price: Annotated[
+            Optional[int],
+            Field(description="Minimum price in JPY (e.g., 10000). Filters the results before returning."),
+        ] = None,
+        max_price: Annotated[
+            Optional[int],
+            Field(description="Maximum price in JPY (e.g., 20000). Filters the results before returning."),
+        ] = None,
+        require_available_seats: Annotated[
+            bool,
+            Field(default=False, description="If True, filters out full/closed tours (満席, 受付終了)."),
+        ] = False,
         page: Annotated[
             int, Field(ge=1, description="Page number (1-based)")
         ] = 1,
@@ -311,8 +323,11 @@ def register_bus_tools(mcp) -> None:
             stay1=stay1,
             stay2=stay2,
             stay3=stay3,
+            min_price=min_price,
             course_cd=course_cd,
             keyword=keyword,
+            max_price=max_price,
+            require_available_seats=require_available_seats,
             page=page,
         )
         return await search_tours_service(input_data)
@@ -320,10 +335,9 @@ def register_bus_tools(mcp) -> None:
     @mcp.tool()
     async def get_tour_detail(
         course_no: Annotated[
-            int,
+            int | list[int],
             Field(
-                gt=0,
-                description="Internal course number on bus.maitabi.jp (e.g., 14241, 8518)",
+                description="Internal course number(s) on bus.maitabi.jp (e.g., 14241, 8518). Can be a single int or list of ints for batch fetching.",
             ),
         ],
     ) -> str:

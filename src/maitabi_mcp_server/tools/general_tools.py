@@ -43,10 +43,22 @@ def register_general_tools(mcp) -> None:
             ),
         ] = None,
         day: Annotated[
-            Optional[int],
-            Field(ge=1, le=31, description="Departure day of month (1-31)"),
+            Optional[int | list[int] | str],
+            Field(description="Departure day of month (1-31). Can be a single int, a list of ints, or a string range (e.g., '14-16, 20')."),
         ] = None,
         page: Annotated[int, Field(ge=1, description="Page number (1-based)")] = 1,
+        min_price: Annotated[
+            Optional[int],
+            Field(description="Minimum price in JPY (e.g., 10000). Filters the results before returning."),
+        ] = None,
+        max_price: Annotated[
+            Optional[int],
+            Field(description="Maximum price in JPY (e.g., 50000). Filters the results before returning."),
+        ] = None,
+        require_available_seats: Annotated[
+            bool,
+            Field(description="If True, filters out full/closed tours (満席, 受付終了)."),
+        ] = False,
         list_order: Annotated[
             Optional[str],
             Field(
@@ -93,6 +105,9 @@ def register_general_tools(mcp) -> None:
             keyword=keyword,
             year_month=year_month,
             day=day,
+            min_price=min_price,
+            max_price=max_price,
+            require_available_seats=require_available_seats,
             page=page,
             list_order=list_order,
             category_nos1=category_nos1,
@@ -105,10 +120,9 @@ def register_general_tools(mcp) -> None:
     @mcp.tool()
     async def get_general_tour_detail(
         course_no: Annotated[
-            int,
+            int | list[int],
             Field(
-                gt=0,
-                description="Tour course number on www.maitabi.jp (e.g., 1723, 24865)",
+                description="Tour course number(s) on www.maitabi.jp (e.g., 1723, 24865). Can be a single int or list of ints for batch fetching.",
             ),
         ],
     ) -> str:
