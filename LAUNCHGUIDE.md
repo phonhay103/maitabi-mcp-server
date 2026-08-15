@@ -1,116 +1,50 @@
 # Maitabi MCP Server
 
 ## Tagline
-Search and explore Japanese alpine bus tours, mountain lodges, and trekking packages from Maitabi (毎日あるぺん号 & 毎日新聞旅行).
+Search Japanese alpine bus tours, mountain lodges, and trekking packages from Maitabi.
 
 ## Description
-Maitabi MCP Server provides AI agents with real-time access to Japan's premier alpine transportation and mountain tour network, **Maitabi (まいたび - 毎日新聞旅行 / 毎日あるぺん号)**. Operating across `bus.maitabi.jp` and `www.maitabi.jp`, it allows LLM-powered assistants to search mountain bus departures, filter alpine lodge packages, inspect guided trekking itineraries, compare pricing, and examine departure calendars across the Northern, Central, and Southern Japanese Alps (including Kamikochi, Tateyama Murodo, Hakuba, Yatsugatake, and Mt. Fuji).
-
-The server supports multi-parameter cascading filters (departure cities including Tokyo, Osaka, Kyoto, and Nagoya; departure months and date ranges; tour styles; standard/premium seat types; specific mountain lodges like Enzanso and Nishiho Sanso; price range and seat availability). It delivers clean, structured JSON data designed for itinerary planning, travel agent workflows, and mountain trip orchestration.
-
-## Category
-Travel & Lifestyle
-
-## Pricing
-Free (Open Source under Apache-2.0 License)
-
-## Use Cases
-Japan Alpine Trip Planning, Mountain Bus Departure Search, Mountain Lodge Package Discovery, Guided Trekking Itinerary Exploration, Multi-filter Tour Comparison, Departure Calendar Matrix Tracking, Outdoor & Hiking Concierge
-
-## Features
-- **Mountain Bus & Lodge Packages (`bus.maitabi.jp`)**: Direct access to Mainichi Alpen bus tours with seat types (Standard, Premium, Double seat) and mountain lodge stays.
-- **General Trekking & Guided Tours (`www.maitabi.jp`)**: Full search across 5 travel categories (Domestic Mountain Climbing, Domestic Travel, Mountain Bus, Overseas Mountain, Overseas Travel).
-- **Cascading Filter Discovery**: Fetch dynamic filter dropdowns, area groups, and live tour counts (`list_filters`, `list_district_groups`).
-- **Comprehensive Tour Details**: Detailed itineraries, pricing breakdowns, pickup/drop-off points, meal plans, guide details, and direct booking links (`get_tour_detail`, `get_general_tour_detail`).
-- **Departure Matrix Calendar**: Monthly calendar schedule extraction showing departures and availability for any year/month (`get_tour_calendar`).
-- **Zero API Key Requirement**: Connects directly to public endpoints without requiring paid API tokens or complex credentials.
-- **Multiple Transports Supported**: Works seamlessly over standard input/output (`stdio`), Server-Sent Events (`sse`), and Streamable HTTP (`streamable-http`).
+Maitabi MCP Server provides AI agents with real-time access to Japan's premier alpine transportation and mountain tour network, Maitabi (まいたび - 毎日新聞旅行 / 毎日あるぺん号). It enables LLMs to search mountain bus departures across the Japanese Alps (Northern, Central, and Southern Alps including Kamikochi, Tateyama Murodo, Hakuba, Yatsugatake, and Mt. Fuji), filter alpine lodge packages, inspect guided trekking itineraries, check live seat availability, and explore departure calendars. Designed for hikers, outdoor enthusiasts, travel concierges, and trip planning agents.
 
 ## Setup Requirements
-- **No API Key Required**: The server queries public Maitabi endpoints directly.
-- **Runtime Prerequisites**:
-  - Python 3.12+ (when running via `uvx` / `uv`) OR
-  - Docker (when running via container)
-- **Package**: Published as `maitabi-mcp-server` on PyPI and Docker Hub (`phonhay103/maitabi-mcp-server:latest`).
+- `MCP_TRANSPORT` (optional): Transport protocol to use (`stdio`, `sse`, or `streamable-http`). Default is `stdio`.
+- `PORT` (optional): Port number for HTTP/SSE transport modes. Default is `8000`.
+- `HOST` (optional): Host address to bind for HTTP/SSE transport modes. Default is `0.0.0.0`.
+- `MCP_PATH` (optional): Path for Streamable HTTP transport mode. Default is `/mcp`.
 
-## Tools Provided
+## Category
+Search & Web
 
-| Tool Name | Scope | Description |
-| :--- | :--- | :--- |
-| `list_filters` | Mountain Bus | Fetch cascading filter options, departure areas, tour styles, mountain lodges, and tour counts. |
-| `list_district_groups` | Mountain Bus | Fetch mountain area/district groups and tour counts based on active filters. |
-| `search_tours` | Mountain Bus | Search mountain bus tours with full filter support (departure point, date, area, style, seat type, lodge, price range, seat availability). |
-| `get_tour_detail` | Mountain Bus | Fetch complete tour schedule, pricing matrix, and bus stop details by `course_no`. |
-| `search_general_tours` | General Travel | Search general tours and alpine trekking packages on `www.maitabi.jp` by travel type, keyword, date, price, and subcategory filters. |
-| `get_general_tour_detail` | General Travel | Fetch complete itinerary, meal condition, guide info, points of interest, and booking links by `course_no`. |
-| `get_tour_calendar` | Calendar | Fetch monthly departure calendar matrix and tour counts for a given year and month. |
+## Use Cases
+Japan Alpine Trip Planning, Mountain Bus Departure Search, Mountain Lodge Package Discovery, Guided Trekking Itinerary Exploration, Multi-filter Tour Comparison, Departure Calendar Matrix Tracking, Outdoor & Hiking Concierge, Travel Assistant Integration
 
-## Quick Start & Client Configuration
+## Features
+- Search mountain bus departures and alpine lodge packages across the Japanese Alps (bus.maitabi.jp)
+- Search domestic and overseas guided climbing tours and hiking trips (www.maitabi.jp)
+- Support for multiple departure hubs including Tokyo (Takebashi/Shinjuku), Osaka, Kyoto, and Nagoya
+- Filter by seat classes including Standard, Premium, and Double seat configurations
+- Filter by specific mountain huts and lodges (e.g., Enzanso, Nishiho Sanso, Murodo Sanso)
+- Filter tours by date ranges, price range, and live seat availability (excluding full/closed tours)
+- Retrieve complete tour itineraries, bus stop locations, meal plans, guide details, and direct booking links
+- Extract monthly departure calendar matrix and tour counts for any given year and month
+- Zero API key requirement with direct connection to public Maitabi endpoints
+- Seamless compatibility with stdio, SSE, and Streamable HTTP transports
 
-### 1. Claude Desktop
-Add to `claude_desktop_config.json` (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS or `%APPDATA%\Claude\claude_desktop_config.json` on Windows):
+## Getting Started
+- "Find mountain bus tours from Tokyo to Kamikochi departing next month with available seats."
+- "Search for trekking packages staying at Enzanso lodge with premium bus seating."
+- "Check the departure calendar for domestic mountain climbing tours in August 2026."
+- "Show me tour details, prices, and itinerary for course number 14241."
+- Tool: list_filters — Fetch available filter dropdown options, departure areas, tour styles, mountain lodges, and live tour counts.
+- Tool: list_district_groups — Fetch mountain area/district groups and tour counts based on active filters.
+- Tool: search_tours — Search mountain bus tours and lodge packages with full filter support (departure, date, seat type, lodge, price, availability).
+- Tool: get_tour_detail — Fetch complete tour schedule, pricing matrix, and bus stop details for a specific bus tour by course_no.
+- Tool: search_general_tours — Search general travel tours and alpine trekking packages across 5 categories on www.maitabi.jp.
+- Tool: get_general_tour_detail — Fetch complete itinerary, meal condition, guide info, and booking links for a general tour by course_no.
+- Tool: get_tour_calendar — Fetch monthly departure calendar matrix and tour availability for a given year and month.
 
-#### Via `uvx` (Recommended):
-```json
-{
-  "mcpServers": {
-    "maitabi": {
-      "command": "uvx",
-      "args": ["maitabi-mcp-server"]
-    }
-  }
-}
-```
+## Tags
+maitabi, japan-alps, mountain-bus, trekking, hiking, travel, alpine, kamikochi, tateyama, hakuba, fuji, japan-travel, tour-search, fastmcp, mcp-server
 
-#### Via Docker:
-```json
-{
-  "mcpServers": {
-    "maitabi": {
-      "command": "docker",
-      "args": [
-        "run",
-        "-i",
-        "--rm",
-        "phonhay103/maitabi-mcp-server:latest"
-      ]
-    }
-  }
-}
-```
-
-### 2. Cursor (`.cursor/mcp.json` or Global `~/.cursor/mcp.json`)
-```json
-{
-  "mcpServers": {
-    "maitabi": {
-      "command": "uvx",
-      "args": ["maitabi-mcp-server"]
-    }
-  }
-}
-```
-
-### 3. VS Code / Cline / Roo Code (`mcp_settings.json`)
-```json
-{
-  "servers": {
-    "maitabi": {
-      "type": "stdio",
-      "command": "uvx",
-      "args": ["maitabi-mcp-server"]
-    }
-  }
-}
-```
-
-### 4. Agent Skills Integration (`npx skills`)
-Install and use as an agent skill directly:
-```bash
-npx skills add phonhay103/maitabi-mcp-server
-```
-
-## Repository & Links
-- **GitHub Repository**: [https://github.com/phonhay103/maitabi-mcp-server](https://github.com/phonhay103/maitabi-mcp-server)
-- **Docker Hub**: [https://hub.docker.com/r/phonhay103/maitabi-mcp-server](https://hub.docker.com/r/phonhay103/maitabi-mcp-server)
-- **License**: Apache-2.0
+## Documentation URL
+https://github.com/phonhay103/maitabi-mcp-server
