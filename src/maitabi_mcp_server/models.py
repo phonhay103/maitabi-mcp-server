@@ -26,23 +26,23 @@ class DeparturePoint(IntEnum):
 class TourStyle(IntEnum):
     """Tour style ID for mountain bus tours."""
 
-    ROUND_TRIP_BUS = 1  # Round-trip bus only
-    OUTBOUND_BUS = 2  # Outbound bus only
-    INBOUND_BUS = 3  # Inbound bus only
-    ROUND_TRIP_LODGE = 4  # Round-trip bus with mountain lodge
-    OUTBOUND_LODGE = 5  # Outbound bus with mountain lodge
-    OVERNIGHT_DAY_TRIP = 6  # Overnight day-trip / round-trip overnight bus
+    ROUND_TRIP_BUS = 1  # Round-trip bus only (daytime departure, no mountain lodge)
+    OUTBOUND_BUS = 2  # Outbound bus only (daytime departure)
+    INBOUND_BUS = 3  # Inbound bus only (daytime departure)
+    ROUND_TRIP_LODGE = 4  # Round-trip bus with mountain lodge (daytime departure, stay overnight at lodge)
+    OUTBOUND_LODGE = 5  # Outbound bus with mountain lodge (daytime departure, stay overnight at lodge)
+    OVERNIGHT_DAY_TRIP = 6  # Night bus departure from Tokyo → arrive at mountain early morning → day hike → return same day (no lodge stay); 夜行日帰り/往復夜行
     TAXI_PLAN = 7  # Taxi plan
 
 
 class ReturnDayOption(IntEnum):
     """Return date option ID for mountain bus tours relative to departure."""
 
-    DAY_1 = 1  # 1 day after departure (overnight day-trip)
-    DAY_2 = 2  # 2 days after departure (1 night stay)
-    DAY_3 = 3  # 3 days after departure (2 nights stay)
-    DAY_4 = 4  # 4 days after departure (3 nights stay)
-    DAY_5 = 5  # 5 days after departure (4 nights stay)
+    DAY_1 = 1  # Return 1 day after departure — used for style=6 (night bus: depart day 0 night, return day 1 evening)
+    DAY_2 = 2  # Return 2 days after departure (1 night stay at mountain lodge)
+    DAY_3 = 3  # Return 3 days after departure (2 nights stay)
+    DAY_4 = 4  # Return 4 days after departure (3 nights stay)
+    DAY_5 = 5  # Return 5 days after departure (4 nights stay)
 
 
 class BusSeatType(IntEnum):
@@ -91,14 +91,14 @@ class ListFiltersInput(BaseModel):
         Optional[TourStyle],
         Field(
             default=None,
-            description="Tour style: 1=Round-trip bus, 2=Outbound bus, 3=Inbound bus, 4=Round-trip lodge, 5=Outbound lodge, 6=Overnight day-trip, 7=Taxi plan",
+            description="Tour style: 1=Round-trip daytime bus, 2=Outbound daytime bus, 3=Inbound daytime bus, 4=Round-trip daytime bus+lodge, 5=Outbound daytime bus+lodge, 6=Night bus (depart at night, arrive mountain at dawn, return same day — 夜行日帰り/往復夜行), 7=Taxi plan",
         ),
     ] = None
     return_day: Annotated[
         Optional[ReturnDayOption],
         Field(
             default=None,
-            description="Return date option: 1=1 day after departure, 2=2 days after, 3=3 days after, 4=4 days after, 5=5 days after",
+            description="Return date option relative to departure date: 1=next day (use with style=6 night bus), 2=2 days after (1 lodge night), 3=3 days after (2 lodge nights), 4=4 days after, 5=5 days after",
         ),
     ] = None
     bus_sheet: Annotated[
@@ -179,14 +179,14 @@ class ListDistrictGroupsInput(BaseModel):
         Optional[TourStyle],
         Field(
             default=None,
-            description="Tour style: 1=Round-trip bus, 2=Outbound bus, 3=Inbound bus, 4=Round-trip lodge, 5=Outbound lodge, 6=Overnight day-trip, 7=Taxi plan",
+            description="Tour style: 1=Round-trip daytime bus, 2=Outbound daytime bus, 3=Inbound daytime bus, 4=Round-trip daytime bus+lodge, 5=Outbound daytime bus+lodge, 6=Night bus (depart at night, arrive mountain at dawn, return same day — 夜行日帰り/往復夜行), 7=Taxi plan",
         ),
     ] = None
     return_day: Annotated[
         Optional[ReturnDayOption],
         Field(
             default=None,
-            description="Return date option: 1=1 day after departure, 2=2 days after, 3=3 days after, 4=4 days after, 5=5 days after",
+            description="Return date option relative to departure date: 1=next day (use with style=6 night bus), 2=2 days after (1 lodge night), 3=3 days after (2 lodge nights), 4=4 days after, 5=5 days after",
         ),
     ] = None
     bus_sheet: Annotated[
@@ -262,14 +262,14 @@ class SearchBusToursInput(BaseModel):
         Optional[TourStyle],
         Field(
             default=None,
-            description="Tour style: 1=Round-trip bus, 2=Outbound bus, 3=Inbound bus, 4=Round-trip lodge, 5=Outbound lodge, 6=Overnight day-trip, 7=Taxi plan",
+            description="Tour style: 1=Round-trip daytime bus, 2=Outbound daytime bus, 3=Inbound daytime bus, 4=Round-trip daytime bus+lodge, 5=Outbound daytime bus+lodge, 6=Night bus (depart at night, arrive mountain at dawn, return same day — 夜行日帰り/往復夜行), 7=Taxi plan",
         ),
     ]
     return_day: Annotated[
         Optional[ReturnDayOption],
         Field(
             default=None,
-            description="Return date option: 1=1 day after departure, 2=2 days after, 3=3 days after, 4=4 days after, 5=5 days after",
+            description="Return date option relative to departure date: 1=next day (use with style=6 night bus), 2=2 days after (1 lodge night), 3=3 days after (2 lodge nights), 4=4 days after, 5=5 days after",
         ),
     ]
     bus_sheet: Annotated[
