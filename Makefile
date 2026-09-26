@@ -1,4 +1,4 @@
-.PHONY: help install dev dev-http dev-sse test docker-build docker-run docker-run-http build clean
+.PHONY: help install dev dev-http dev-sse test cli-help cli-example docker-build docker-run docker-run-http build clean
 
 DOCKER_USER ?= phonhay103
 IMAGE_NAME ?= maitabi-mcp-server
@@ -26,6 +26,12 @@ dev-sse: ## Run the MCP server locally using SSE transport
 
 test: ## Run test suite
 	uv run python -c "import asyncio; from maitabi_mcp_server.services.bus_service import list_filters_service; from maitabi_mcp_server.models import ListFiltersInput; asyncio.run(list_filters_service(ListFiltersInput())); print('Tests passed!')"
+
+cli-help: ## Show CLI help (optional wrapper, default distribution is MCP)
+	uv run maitabi --help
+
+cli-example: ## Example CLI search (mountain bus tours)
+	uv run maitabi search-tours --departure 1 --month 8 --area 18 --page 1 | head -c 2000
 
 docker-build: ## Build the 2-stage Docker image (Python 3.14)
 	docker build -t $(IMAGE_NAME):$(TAG) -t $(DOCKER_USER)/$(IMAGE_NAME):$(TAG) .

@@ -119,7 +119,32 @@ npx skills use phonhay103/maitabi-mcp-server
 ```
 
 **Available Skills:**
-- **`maitabi-bus-extractor`** (`skills/maitabi-bus-extractor/SKILL.md`): Search and extract Maitabi mountain bus (`bus.maitabi.jp`) and general trekking tours (`www.maitabi.jp`).
+- **`maitabi-bus-extractor`** (`skills/maitabi-bus-extractor/SKILL.md`): Raw HTTP/curl extraction for mountain bus (`bus.maitabi.jp`) and general trekking tours (`www.maitabi.jp`). Standalone — no MCP or CLI needed.
+- **`maitabi-cli`** (`skills/maitabi-cli/SKILL.md`): Terminal `maitabi ...` commands with JSON output. Same core as MCP.
+- **`maitabi-mcp`** (`skills/maitabi-mcp/SKILL.md`): MCP client tools (`search_tours`, `get_tour_detail`, ...). Same core as CLI.
+
+---
+
+## CLI Usage (Optional — Default Distribution Is MCP)
+
+The `maitabi` CLI shares the same core services as the MCP server and prints identical JSON to stdout.
+
+```bash
+# Via uvx / pip
+uvx maitabi --help
+pip install maitabi-mcp-server && maitabi --help
+
+# Via Docker (image contains both entrypoints)
+docker run -i --rm --entrypoint maitabi phonhay103/maitabi-mcp-server:latest --help
+
+# Examples
+maitabi search-tours --departure 1 --month 8 --area 18 --page 1 --pretty
+maitabi search-general-tours --travel-type 1 --keyword '富士山' --year-month 2026-08 --pretty
+maitabi get-tour-detail --course-no 14241 --pretty
+maitabi get-tour-calendar --year 2026 --month 8 --pretty
+```
+
+Every subcommand accepts `--pretty` (indented JSON) and `--output FILE`. See `make cli-help` for the full list.
 
 ---
 

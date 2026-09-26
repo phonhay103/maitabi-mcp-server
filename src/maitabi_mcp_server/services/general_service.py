@@ -41,6 +41,25 @@ async def search_general_tours_service(input: SearchGeneralToursInput) -> str:
         params.append(("keyword", input.keyword))
     if input.year_month:
         params.append(("startDateYearMonthMin", input.year_month))
+    if input.list_order:
+        params.append(("listOrder", input.list_order))
+
+    # Category arrays (must be added BEFORE fetching)
+    if input.category_nos1:
+        for val in input.category_nos1:
+            params.append(("categoryNos1[]", str(val)))
+    if input.category_nos2:
+        for val in input.category_nos2:
+            params.append(("categoryNos2[]", str(val)))
+    if input.category_nos3:
+        for val in input.category_nos3:
+            params.append(("categoryNos3[]", str(val)))
+    if input.category_nos4:
+        for val in input.category_nos4:
+            params.append(("categoryNos4[]", str(val)))
+    if input.category_nos5:
+        for val in input.category_nos5:
+            params.append(("categoryNos5[]", str(val)))
     parsed_days = parse_days(input.day)
     
     if parsed_days and len(parsed_days) > 1:
@@ -67,25 +86,6 @@ async def search_general_tours_service(input: SearchGeneralToursInput) -> str:
         if parsed_days and len(parsed_days) == 1:
             params.append(("startDateDayMin", str(parsed_days[0])))
         data = await _make_api_request(f"{MAIN_BASE}/api/v1/category_search", params=params)
-    if input.list_order:
-        params.append(("listOrder", input.list_order))
-
-    # Category arrays
-    if input.category_nos1:
-        for val in input.category_nos1:
-            params.append(("categoryNos1[]", str(val)))
-    if input.category_nos2:
-        for val in input.category_nos2:
-            params.append(("categoryNos2[]", str(val)))
-    if input.category_nos3:
-        for val in input.category_nos3:
-            params.append(("categoryNos3[]", str(val)))
-    if input.category_nos4:
-        for val in input.category_nos4:
-            params.append(("categoryNos4[]", str(val)))
-    if input.category_nos5:
-        for val in input.category_nos5:
-            params.append(("categoryNos5[]", str(val)))
 
     # Enrich items with detail_url
     if "data" in data and isinstance(data["data"], list):

@@ -93,9 +93,27 @@ async def list_district_groups_service(input: ListDistrictGroupsInput) -> str:
 
 async def search_tours_service(input: SearchBusToursInput) -> str:
     """Search mountain bus tours with filters."""
-    params = {"departure": str(input.departure), "page": str(input.page)}
+    params = {"departure": str(input.departure.value if hasattr(input.departure, "value") else input.departure), "page": str(input.page)}
     if input.month is not None:
         params["month"] = str(input.month)
+    if input.area is not None:
+        params["area"] = str(input.area)
+    if input.style is not None:
+        params["style"] = str(input.style.value if hasattr(input.style, "value") else input.style)
+    if input.return_day is not None:
+        params["return_day"] = str(input.return_day.value if hasattr(input.return_day, "value") else input.return_day)
+    if input.bus_sheet is not None:
+        params["bus_sheet"] = str(input.bus_sheet.value if hasattr(input.bus_sheet, "value") else input.bus_sheet)
+    if input.stay1 is not None:
+        params["stay1"] = str(input.stay1)
+    if input.stay2 is not None:
+        params["stay2"] = str(input.stay2)
+    if input.stay3 is not None:
+        params["stay3"] = str(input.stay3)
+    if input.course_cd:
+        params["course_cd"] = input.course_cd
+    if input.keyword:
+        params["keyword"] = input.keyword
     # Parse day input into a list of ints if possible
     parsed_days = parse_days(input.day)
 
