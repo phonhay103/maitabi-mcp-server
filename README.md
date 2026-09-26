@@ -146,6 +146,15 @@ maitabi get-tour-calendar --year 2026 --month 8 --pretty
 
 Every subcommand accepts `--pretty` (indented JSON) and `--output FILE`. See `make cli-help` for the full list.
 
+### Rate limits
+
+| Host | Limit | Applies to |
+|------|-------|------------|
+| `www.maitabi.jp` | 60 requests/min per IP | General tours + calendar (MCP tools, CLI, or curl alike) |
+| `api.bus.maitabi.jp` | None observed at normal usage | Mountain bus tours |
+
+When the cap is hit, wrappers return `{"error": "Rate limited by www.maitabi.jp ...", "retry_hint": "wait ~60s and retry manually"}` instead of results. There is no auto-retry — wait and re-run. Narrow `day` ranges help, since each day fans out into a parallel request.
+
 ---
 
 ## 2. Development

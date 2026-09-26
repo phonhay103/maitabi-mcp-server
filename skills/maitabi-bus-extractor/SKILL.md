@@ -111,6 +111,11 @@ curl -L -s 'https://www.maitabi.jp/api/v1/category_search?travelType=1&keyword=%
 curl -L -s 'https://www.maitabi.jp/api/v1/calendar/2026/8?travelType=1'
 ```
 
+### Rate limits
+
+- `www.maitabi.jp` endpoints are capped at **60 requests/min per IP** (see `x-ratelimit-limit` / `x-ratelimit-remaining` response headers). Over the cap you get HTTP 200 with body `{"errors": {"code": 0, "message": "Too Many Attempts."}}` — wait ~60s and re-run the request manually. Fanning out one request per day for large ranges hits the cap fast, so keep ranges narrow.
+- `api.bus.maitabi.jp` endpoints show no rate-limit headers at normal usage levels.
+
 ## 6. Standard output
 
 Normalize every extraction to:

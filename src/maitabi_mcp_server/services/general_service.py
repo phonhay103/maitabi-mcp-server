@@ -14,6 +14,8 @@ from maitabi_mcp_server.models import (
 from maitabi_mcp_server.services.http_client import get_http_client
 from maitabi_mcp_server.services.utils import parse_days
 
+RATE_LIMIT_ERROR = "Rate limited by www.maitabi.jp (60 requests/min per IP)"
+
 
 async def _make_api_request(url: str, params: list | dict | None = None) -> dict:
     """Helper to make GET requests to Maitabi API with error handling."""
@@ -21,7 +23,18 @@ async def _make_api_request(url: str, params: list | dict | None = None) -> dict
     try:
         res = await client.get(url, params=params)
         res.raise_for_status()
-        return res.json()
+        data = res.json()
+        # www.maitabi.jp throttles with HTTP 200 + error body (no Retry-After header).
+        # Surface it clearly instead of passing the raw body through. No auto-retry.
+        if isinstance(data, dict):
+            errors = data.get("errors")
+            if isinstance(errors, dict) and errors.get("message") == "Too Many Attempts.":
+                return {
+                    "error": RATE_LIMIT_ERROR,
+                    "detail": "Too Many Attempts.",
+                    "retry_hint": "wait ~60s and retry manually",
+                }
+        return data
     except httpx.HTTPStatusError as e:
         return {
             "error": f"Upstream service returned error: {e.response.status_code}",
@@ -79,6 +92,9 @@ async def search_general_tours_service(input: SearchGeneralToursInput) -> str:
         all_tours = []
         data = {"data": []}
         for res in results:
+            # Fail fast on throttle: no partial merges, no auto-retry.
+            if res.get("error") == RATE_LIMIT_ERROR:
+                return json.dumps(res, ensure_ascii=False, indent=2)
             if "data" in res and isinstance(res["data"], list):
                 all_tours.extend(res["data"])
         data["data"] = all_tours

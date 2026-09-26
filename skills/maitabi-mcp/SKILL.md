@@ -98,3 +98,4 @@ See `../maitabi-bus-extractor/references/filter-mapping.md` for departure/area/s
 - No tools listed → check client config key (`mcpServers` vs `servers`+`type: stdio`) and restart client.
 - Empty results → widen filters; `month` is required by backend (defaults to current month).
 - `{"error": ...}` payload → upstream/network issue, retry before changing filters.
+- `{"error": "Rate limited by www.maitabi.jp (60 requests/min per IP)", ...}` → general tools (`search_general_tours`, `get_tour_calendar`) are capped at 60 req/min per IP. Wait ~60s and retry manually — do not change filters. Large `day` ranges fan out into parallel requests and hit the cap faster, so prefer narrow day ranges.

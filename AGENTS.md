@@ -88,6 +88,7 @@ Rules:
 - [ ] `maitabi-cli/SKILL.md` command examples updated (no curl/MCP refs)
 - [ ] `maitabi-mcp/SKILL.md` tool docs updated (no curl/CLI refs)
 - [ ] `filter-mapping.md` ID mappings updated (single source in `maitabi-bus-extractor/references/`)
+- [ ] Rate-limit behavior in `general_service.py` + documented in 3 skills (`www.maitabi.jp`: 60 req/min/IP, clear error, no auto-retry)
 - [ ] Tests pass: `uv run pytest tests/ -v` + `make cli-help`
 - [ ] CLI output matches MCP output matches cURL response shape
 
