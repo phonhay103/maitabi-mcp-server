@@ -1,60 +1,22 @@
 ---
 name: maitabi-mcp
-description: Use the Maitabi MCP server tools (list_filters, search_tours, get_tour_detail, search_general_tours, get_general_tour_detail, get_tour_calendar) from an MCP client to search mountain bus and general tours. Use when the user works inside Claude Desktop, Cursor, VSCode/Cline, or Pi — no terminal CLI or raw HTTP needed.
+description: Search Maitabi mountain bus tours, trekking tours, and departure calendars using already-connected MCP tools (list_filters, search_tours, get_tour_detail, search_general_tours, get_general_tour_detail, get_tour_calendar). Use when the user asks about bus departures, lodge packages, trekking itineraries, prices, availability, or course numbers.
 ---
 
 # Maitabi MCP Skill
 
-Connect the `maitabi-mcp-server` to your MCP client. The server wraps the same core as the `maitabi` CLI, so results match CLI outputs.
+The 7 Maitabi tools below are already available in the MCP client. This skill tells you which tool to call, in what order, and how to read the results.
 
-## 1. Install / configure client
+## When to use
 
-### Via `uvx` (recommended)
+Use this skill when the user asks about mountain bus departures (`bus.maitabi.jp`), lodge packages, guided trekking tours (`www.maitabi.jp`), departure calendars, prices, live availability, or tour details by `course_no`.
 
-Claude Desktop / Cursor / Pi (`claude_desktop_config.json`, top-level `mcpServers`):
+## When NOT to use
 
-```json
-{
-  "mcpServers": {
-    "maitabi": { "command": "uvx", "args": ["maitabi-mcp-server"] }
-  }
-}
-```
+- Terminal commands or shell scripts → `maitabi-cli` skill.
+- Raw HTTP / curl extraction → `maitabi-bus-extractor` skill.
 
-VSCode / Cline / Roo Code (`mcp_settings.json`, top-level `servers`, needs `"type": "stdio"`):
-
-```json
-{
-  "servers": {
-    "maitabi": { "command": "uvx", "args": ["maitabi-mcp-server"], "type": "stdio" }
-  },
-  "inputs": []
-}
-```
-
-### Via Docker
-
-```json
-{
-  "mcpServers": {
-    "maitabi": { "command": "docker", "args": ["run", "-i", "--rm", "phonhay103/maitabi-mcp-server:latest"] }
-  }
-}
-```
-
-### Local checkout
-
-```json
-{
-  "mcpServers": {
-    "maitabi": { "command": "uv", "args": ["run", "--directory", "/path/to/maitabi-mcp-server", "maitabi-mcp-server"] }
-  }
-}
-```
-
-HTTP/SSE transports: run `maitabi-mcp-server --transport streamable-http --host 0.0.0.0 --port 8000` (or `sse`) and point the client at the URL. Env overrides: `MCP_TRANSPORT`, `HOST`, `PORT`, `MCP_PATH`.
-
-## 2. Tools (7)
+## 1. Tools (7)
 
 ### Mountain bus (`bus.maitabi.jp`)
 
@@ -69,14 +31,14 @@ HTTP/SSE transports: run `maitabi-mcp-server --transport streamable-http --host 
 - **`get_general_tour_detail`** — itinerary/meals/guide/booking by `course_no` (int or list).
 - **`get_tour_calendar`** — monthly departure matrix for `year`/`month`, optional `travel_type`.
 
-## 3. Typical flows
+## 2. Typical flows
 
 1. Discover: `list_filters` (departure+month) → pick `area`/`style` IDs.
 2. Search: `search_tours` (bus) or `search_general_tours` (trekking) with `require_available_seats=true` when user wants bookable tours.
 3. Detail: `get_tour_detail` / `get_general_tour_detail` with `course_no` from results.
 4. Calendar: `get_tour_calendar` for month overview before narrowing days.
 
-## 4. Output
+## 3. Output
 
 Tools return JSON strings with `detail_url` links included:
 
@@ -89,13 +51,14 @@ Tools return JSON strings with `detail_url` links included:
 }
 ```
 
-## 5. Filter ID reference
+Done when the payload has `count`/`tour`/`param` (or the detail fields for `get_*_detail`).
+
+## 4. Filter ID reference
 
 See `../maitabi-bus-extractor/references/filter-mapping.md` for departure/area/style/return-day/seat/lodge ID tables.
 
-## 6. Troubleshooting
+## 5. Troubleshooting
 
-- No tools listed → check client config key (`mcpServers` vs `servers`+`type: stdio`) and restart client.
 - Empty results → widen filters; `month` is required by backend (defaults to current month).
 - `{"error": ...}` payload → upstream/network issue, retry before changing filters.
 - `{"error": "Rate limited by www.maitabi.jp (60 requests/min per IP)", ...}` → general tools (`search_general_tours`, `get_tour_calendar`) are capped at 60 req/min per IP. Wait ~60s and retry manually — do not change filters. Large `day` ranges fan out into parallel requests and hit the cap faster, so prefer narrow day ranges.

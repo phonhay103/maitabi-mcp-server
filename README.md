@@ -21,6 +21,8 @@ Docker Hub Repository: [phonhay103/maitabi-mcp-server](https://hub.docker.com/r/
 
 ## 1. MCP Server Usage
 
+The MCP server is a runtime exposing 7 tools over `stdio`, `SSE`, or Streamable HTTP. This section is the canonical setup reference (entrypoints, transports, client config). Agent tool-call workflows live in the `maitabi-mcp` skill, which assumes the server here is already connected.
+
 ### Running the Server
 
 #### Option A: Zero-setup via `uvx`
@@ -38,12 +40,11 @@ docker pull phonhay103/maitabi-mcp-server:latest
 docker run -i --rm phonhay103/maitabi-mcp-server:latest
 ```
 
-### Configuration for MCP Clients
+### Configuration for MCP Clients (setup reference)
 
-Add the following to your MCP client settings depending on your client platform:
+Add the following to your MCP client settings. Pick the key format your client expects:
 
-#### 1. For Claude Desktop / Cursor / Pi (`claude_desktop_config.json`)
-Uses the `"mcpServers"` top-level key format:
+#### 1. `mcpServers` key format (stdio)
 
 ##### Via `uvx` (Recommended):
 ```json
@@ -74,8 +75,7 @@ Uses the `"mcpServers"` top-level key format:
 }
 ```
 
-#### 2. For VSCode / Cursor Extensions (e.g. Cline, Roo Code, etc.)
-Uses the `"servers"` top-level key and requires the `"type": "stdio"` field (typically in `clines_mcp_settings.json` or `mcp_settings.json`):
+#### 2. `servers` key format (requires `"type": "stdio"`)
 
 ```json
 {
@@ -121,7 +121,7 @@ npx skills use phonhay103/maitabi-mcp-server
 **Available Skills:**
 - **`maitabi-bus-extractor`** (`skills/maitabi-bus-extractor/SKILL.md`): Raw HTTP/curl extraction for mountain bus (`bus.maitabi.jp`) and general trekking tours (`www.maitabi.jp`). Standalone — no MCP or CLI needed.
 - **`maitabi-cli`** (`skills/maitabi-cli/SKILL.md`): Terminal `maitabi ...` commands with JSON output. Same core as MCP.
-- **`maitabi-mcp`** (`skills/maitabi-mcp/SKILL.md`): MCP client tools (`search_tours`, `get_tour_detail`, ...). Same core as CLI.
+- **`maitabi-mcp`** (`skills/maitabi-mcp/SKILL.md`): How to call the already-connected MCP tools (`search_tours`, `get_tour_detail`, ...) — tool choice, flows, args, output. Assumes the server from §1 is already configured; no install steps here.
 
 ---
 

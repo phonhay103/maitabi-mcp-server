@@ -1,6 +1,6 @@
 # Maitabi Core ↔ MCP ↔ CLI ↔ Skills Sync Guide
 
-**Purpose**: Core logic lives once in `models.py` + `services/`. MCP (`tools/` + `server.py`) and CLI (`cli/` + `cli_main.py`) are thin wrappers — never duplicate business logic. Three skills stay independent.
+**Purpose**: Core logic lives once in `models.py` + `services/`. MCP (`tools/` + `server.py`) is the runtime/capability layer — agent-neutral, no workflow language. The `maitabi-mcp` skill is the procedure layer (which tool, in what order, how to read results) and always assumes the server is already connected — it contains zero setup. Three skills stay independent.
 
 **Default distribution is MCP.** CLI (`maitabi`) is optional but ships in the same package/image. `dependencies` in `pyproject.toml` stay full (mcp, fastmcp, httpx, pydantic) so PyPI (`pip install maitabi-mcp-server` / `uvx maitabi-mcp-server`) and Docker Hub keep working unchanged.
 
@@ -15,7 +15,7 @@ Wrapper: tools/bus_tools.py + tools/general_tools.py + server.py   (MCP)
 Wrapper: cli/parser.py + cli/commands.py + cli_main.py             (CLI)
 Skill:   skills/maitabi-bus-extractor/ (raw curl/HTTP, standalone)
 Skill:   skills/maitabi-cli/           (terminal `maitabi ...` only)
-Skill:   skills/maitabi-mcp/           (MCP client tools only)
+Skill:   skills/maitabi-mcp/           (procedure only: tool choice/flows/output, assumes server connected, zero setup)
 ```
 
 Rules:
@@ -86,7 +86,7 @@ Rules:
 - [ ] `cli/parser.py` + `cli/commands.py` CLI wrappers updated
 - [ ] `maitabi-bus-extractor/SKILL.md` cURL examples updated (standalone, no MCP/CLI refs)
 - [ ] `maitabi-cli/SKILL.md` command examples updated (no curl/MCP refs)
-- [ ] `maitabi-mcp/SKILL.md` tool docs updated (no curl/CLI refs)
+- [ ] `maitabi-mcp/SKILL.md` tool docs updated (no curl/CLI refs, no server install JSON — setup lives in README §1)
 - [ ] `filter-mapping.md` ID mappings updated (single source in `maitabi-bus-extractor/references/`)
 - [ ] Rate-limit behavior in `general_service.py` + documented in 3 skills (`www.maitabi.jp`: 60 req/min/IP, clear error, no auto-retry)
 - [ ] Tests pass: `uv run pytest tests/ -v` + `make cli-help`
